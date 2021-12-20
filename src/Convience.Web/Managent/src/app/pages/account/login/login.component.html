@@ -1,0 +1,42 @@
+<div class="container" style="max-width: inherit;">
+    <nz-card style="margin: 0;">
+        <h1>CF-BASE</h1>
+        <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()">
+            <nz-form-item>
+                <nz-form-control nzErrorTip="請輸入您的帳號!">
+                    <nz-input-group nzPrefixIcon="user">
+                        <input type="text" nz-input formControlName="userName" placeholder="帳號" />
+                    </nz-input-group>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-control nzErrorTip="請輸入您的密碼!">
+                    <nz-input-group nzPrefixIcon="lock">
+                        <input type="password" nz-input formControlName="password" placeholder="密碼" />
+                    </nz-input-group>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-control nzErrorTip="請輸入驗證碼!">
+                    <nz-input-group nzPrefixIcon="key" style="width:50%;">
+                        <input type="text" nz-input formControlName="captchaValue" placeholder="驗證碼" />
+                    </nz-input-group>
+                    <div style="width:50%; text-align: center;display: inline-block;">
+                        <img [src]="captcha" (click)="refreshCaptcha()">
+                    </div>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-control>
+                    <!-- <label nz-checkbox formControlName="remember">
+                        <span>記住我</span>
+                    </label>
+                    <a class="login-form-forgot" class="login-form-forgot">忘記密碼</a> -->
+                    <button nz-button class="login-form-button" [nzType]="'primary'" [nzLoading]="isLoading">登入</button>
+                    <!-- <a>現在註冊!</a> -->
+                </nz-form-control>
+            </nz-form-item>
+        </form>
+    </nz-card>
+</div>

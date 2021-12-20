@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="GroupManage\EmployeeService.cs~RFd01e1c4.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SapNwRfc" Version="1.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Convience.Caching\Convience.Caching.csproj" />
+  </ItemGroup>
+
+</Project>

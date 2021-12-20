@@ -1,0 +1,138 @@
+<div class="content">
+    <div class="left">
+        <nz-card [nzSize]="'small'">
+            <button nz-button class="mb-10" (click)="initNodes()"><i nz-icon nzType="sync"></i>刷新數據</button>
+            <nz-tree #nzTreeComponent [nzData]="nodes" nzShowIcon="true" (nzClick)="treeClick($event)"
+                [nzExpandedIcon]="mutiExpandedIconTpl">
+                <ng-template #mutiExpandedIconTpl let-node>
+                    <i *ngIf="!node.origin.isLeaf" nz-icon [nzType]="node.isExpanded ? 'caret-down' : 'caret-right'"
+                        style="color: lightgray;"></i>
+                    <i *ngIf="node.origin.isLeaf" nz-icon nzType="file" class="ant-tree-switcher-line-icon"></i>
+                </ng-template>
+            </nz-tree>
+        </nz-card>
+    </div>
+    <div class="right">
+        <nz-card [nzSize]="'small'">
+            <div>
+                <button nz-button class="mr-10" (click)="add(addMenuTitleTpl,menuContentTpl)"
+                    *canOperate="'addMenuBtn'"><i nz-icon nzType="plus"></i>添加內容</button>
+            </div>
+            <div class="mt-10">
+                <nz-table #dataTable nzSize="middle" [nzData]="displayData" nzShowPagination="false"
+                    nzFrontPagination="false" nzBordered="true">
+                    <thead>
+                        <tr>
+                            <th nzAlign="center" nzWidth="60px">#</th>
+                            <th nzAlign="center" nzWidth="120px">上級菜單</th>
+                            <th nzAlign="center" nzWidth="120px">名稱</th>
+                            <th nzAlign="center" nzWidth="120px">前端標識</th>
+                            <th nzAlign="center" nzWidth="200px">後端權限</th>
+                            <th nzAlign="center" nzWidth="60px">類型</th>
+                            <th nzAlign="center">路由</th>
+                            <th nzAlign="center" nzWidth="60px">排序</th>
+                            <th nzAlign="center" nzWidth="120px">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let data of dataTable.data;let i = index">
+                            <td nzAlign="center">{{ i + 1}}</td>
+                            <td nzAlign="center">{{ getUpperMenuById(data.upId) }}</td>
+                            <td nzAlign="center">{{ data.name }}</td>
+                            <td nzAlign="center">{{ data.identification }}</td>
+                            <td nzAlign="center" nzBreakWord>{{ data.permission }}</td>
+                            <td nzAlign="center">{{ data.type | menuType }}</td>
+                            <td nzAlign="center">{{ data.route }}</td>
+                            <td nzAlign="center">{{ data.sort }}</td>
+                            <td nzAlign="center">
+                                <button nz-button nzType="default" nzShape="circle" *canOperate="'updateMenuBtn'"
+                                    (click)="edit(editUserTitleTpl,menuContentTpl,data)" class="mr-10"><i nz-icon
+                                        nzType="edit"></i></button>
+                                <button nz-button nzType="default" nzShape="circle" *canOperate="'deleteMenuBtn'"
+                                    (click)="remove(data.id)" class="mr-10"><i nz-icon nzType="delete"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+            </div>
+        </nz-card>
+    </div>
+</div>
+
+<ng-template #addMenuTitleTpl>
+    <span>添加菜單</span>
+</ng-template>
+<ng-template #editUserTitleTpl>
+    <span>編輯菜單</span>
+</ng-template>
+<ng-template #menuContentTpl>
+    <form nz-form [formGroup]="editForm" (ngSubmit)="submitEdit()">
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24">上級菜單</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+                <nz-tree-select [nzNodes]="nodes" formControlName="upMenu" nzVirtualHeight="400px"></nz-tree-select>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label nzRequired [nzSm]="6" [nzXs]="24" [nzFor]="'edit_menuName'">菜單名稱</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" [nzErrorTip]="userNameErrorTpl">
+                <input [attr.id]="'edit_menuName'" formControlName="name" nz-input placeholder="菜單名稱"
+                    autocomplete="off" />
+            </nz-form-control>
+            <ng-template #userNameErrorTpl let-control>
+                <ng-container *ngIf="control.hasError('required')">
+                    請輸入帳號！
+                </ng-container>
+                <ng-container *ngIf="control.hasError('maxlength')">
+                    角色名長度不能超過10！
+                </ng-container>
+            </ng-template>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="'edit_identification'">前端識別</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="請輸入前端識別！">
+                <input [attr.id]="'edit_identification'" formControlName="identification" nz-input placeholder="前端識別"
+                    autocomplete="off" />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="'edit_permission'">後端識別</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="請輸入後端識別！">
+                <input [attr.id]="'edit_permission'" formControlName="permission" nz-input placeholder="後端識別"
+                    autocomplete="off" />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="'edit_type'">類型</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+                <nz-radio-group [attr.id]="'edit_type'" formControlName="type">
+                    <label nz-radio [nzValue]="0">未知</label>
+                    <label nz-radio [nzValue]="1">菜單</label>
+                    <label nz-radio [nzValue]="2">按鈕</label>
+                    <label nz-radio [nzValue]="3">鏈接</label>
+                </nz-radio-group>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSm]="6" [nzXs]="24" [nzFor]="'edit_route'">路由</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24">
+                <input [attr.id]="'edit_route'" formControlName="route" nz-input placeholder="路由" autocomplete="off" />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label nzRequired [nzSm]="6" [nzXs]="24" [nzFor]="'edit_identification'">排序</nz-form-label>
+            <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="請輸入排序！">
+                <input type="number" [attr.id]="'edit_sort'" formControlName="sort" nz-input placeholder="排序"
+                    autocomplete="off" />
+            </nz-form-control>
+        </nz-form-item>
+
+
+        <nz-form-item>
+            <nz-form-control [nzSpan]="14" [nzOffset]="6">
+                <button nz-button nzType="primary" class="mr-10">提交</button>
+                <button nz-button type="reset" (click)="cancelEdit()">取消</button>
+            </nz-form-control>
+        </nz-form-item>
+    </form>
+</ng-template>
